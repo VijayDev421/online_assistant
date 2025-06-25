@@ -15,9 +15,9 @@ def ask():
         response = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={
-                "Authorization": f"Bearer " + OPENROUTER_API_KEY,
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
                 "Content-Type": "application/json",
-                "HTTP-Referer": "https://github.com/EswarSai/online_assistant",
+                "Referer": "https://github.com/EswarSai/online_assistant",
                 "X-Title": "Taravi Assistant"
             },
             json={
@@ -25,7 +25,6 @@ def ask():
                 "messages": [{"role": "user", "content": prompt}]
             }
         )
-
         response.raise_for_status()
         result = response.json()
         reply = result['choices'][0]['message']['content']
@@ -41,4 +40,5 @@ def dashboard():
             return f.read()
     except Exception as e:
         return f"Error loading dashboard: {str(e)}", 500
+
 
