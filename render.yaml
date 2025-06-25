@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: taravi-assistant
+    env: python
+    buildCommand: ""
+    startCommand: "python taravi_assistant.py"
+    plan: free
+    region: oregon
+    envVars: []
