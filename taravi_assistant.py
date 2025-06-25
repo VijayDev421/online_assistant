@@ -30,6 +30,15 @@ def ask():
         result = response.json()
         reply = result['choices'][0]['message']['content']
         return jsonify({"response": reply})
+        
+  @app.route('/dashboard')
+def dashboard():
+    try:
+        with open("taravi_dashboard.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        return f"Error loading dashboard: {str(e)}", 500
+      
     
     except Exception as e:
         return jsonify({"response": f"Error: {str(e)}"}), 500
