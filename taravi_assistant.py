@@ -8,27 +8,32 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 @app.route('/ask', methods=['POST'])
 def ask():
-    data = request.json
-    prompt = data.get("prompt", "")
-
+    prompt = request.json.get("prompt", "")
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+        "Referer": "https://github.com/EswarSai/online_assistant",
+        "X-Title": "Taravi Assistant"
+    }
+    payload = {
+        "model": "openai/gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": prompt}]
+    }
     try:
-        response = requests.post(
+        resp = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json",
-                "Referer": "https://github.com/EswarSai/online_assistant",
-                "X-Title": "Taravi Assistant"
-            },
-            json={
-                "model": "openai/gpt-3.5-turbo",
-                "messages": [{"role": "user", "content": prompt}]
-            }
+            headers=headers, json=payload, timeout=10
         )
-        response.raise_for_status()
-        result = response.json()
-        reply = result['choices'][0]['message']['content']
-        return jsonify({"response": reply})
+    except Exception as e:
+        return jsonify({"response": f"Request failed: {e}", "payload": payload, "headers": dict(headers)}), 500
+
+    return jsonify({
+        "status_code": resp.status_code,
+        "reason": resp.reason,
+        "response_text": resp.text[:500],
+        "sent_payload": payload,
+        "sent_headers": dict(headers)
+    }), resp.status_code
 
     except Exception as e:
         return jsonify({"response": f"Error: {str(e)}"}), 500
