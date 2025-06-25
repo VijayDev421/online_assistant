@@ -1,21 +1,38 @@
-from flask import Flask, request, jsonify, render_template
+import os
+import requests
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-app = Flask(__name__, template_folder=".")
+app = Flask(__name__)
 CORS(app)
 
-chat_history = []
-
-@app.route('/dashboard')
-def dashboard():
-    return render_template('taravi_dashboard.html')
+# Get the API key from environment variables
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 @app.route('/ask', methods=['POST'])
 def ask():
-    user_input = request.json.get("question", "")
-    response = f"You asked: {user_input} — this is a placeholder response."
-    chat_history.append({"user": user_input, "assistant": response})
-    return jsonify({"response": response})
+    data = request.json
+    prompt = data.get("prompt", "")
+    
+    try:
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "openai/gpt-3.5-turbo",
+                "messages": [{"role": "user", "content": prompt}]
+            }
+        )
+        response.raise_for_status()
+        result = response.json()
+        reply = result['choices'][0]['message']['content']
+        return jsonify({"response": reply})
+    
+    except Exception as e:
+        return jsonify({"response": f"Error: {str(e)}"}), 500
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+if __name__ == "__main__":
+    app.run(debug=True)
