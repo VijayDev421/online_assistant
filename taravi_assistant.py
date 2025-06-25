@@ -17,8 +17,11 @@ def ask():
     }
 
     data = {
-        "model": "mistralai/mistral-7b-instruct",  # ✅ safer, always-available model
-        "messages": [{"role": "user", "content": prompt}]
+        "model": "mistralai/mistral-7b-instruct",
+        "messages": [
+            {"role": "system", "content": "You are Taravi, a helpful assistant. Answer user queries accurately and clearly."},
+            {"role": "user", "content": prompt}
+        ]
     }
 
     try:
