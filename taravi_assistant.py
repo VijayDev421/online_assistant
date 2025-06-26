@@ -7,20 +7,20 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 @app.route('/ask', methods=['POST'])
 def ask():
-    prompt = request.json.get("prompt", "")
+    user_prompt = request.json.get("prompt", "")
 
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
-        "Referer": "https://github.com/EswarSai/online_assistant",
-        "X-Title": "Taravi Assistant"
+        "Referer": "https://github.com/EswarSai/online_assistant",  # required by OpenRouter
+        "X-Title": "Taravi Assistant"  # optional but nice
     }
 
     data = {
-        "model": "mistralai/mistral-7b-instruct",
+        "model": "meta-llama/llama-3-8b-instruct",
         "messages": [
-            {"role": "system", "content": "You are Taravi, a helpful assistant. Answer user queries accurately and clearly."},
-            {"role": "user", "content": prompt}
+            {"role": "system", "content": "You are Taravi, a helpful, friendly AI assistant who answers questions clearly and naturally."},
+            {"role": "user", "content": user_prompt}
         ]
     }
 
@@ -29,7 +29,7 @@ def ask():
         response.raise_for_status()
         result = response.json()
         reply = result["choices"][0]["message"]["content"]
-        return jsonify({"response": reply})
+        return jsonify({"response": reply.strip()})
 
     except requests.exceptions.HTTPError as http_err:
         return jsonify({"response": f"HTTP error: {http_err}", "details": response.text}), 500
