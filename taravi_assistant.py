@@ -16,13 +16,14 @@ def ask():
         "X-Title": "Taravi Assistant"  # optional but nice
     }
 
-    data = {
+       data = {
         "model": "meta-llama/llama-3-8b-instruct",
         "messages": [
-            {"role": "system", "content": "You are Taravi, a helpful, friendly AI assistant who answers questions clearly and naturally."},
+            {"role": "system", "content": "You are Taravi, an intelligent assistant. Give direct and helpful responses without repeating introductions."},
             {"role": "user", "content": user_prompt}
         ]
     }
+
 
     try:
         response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
