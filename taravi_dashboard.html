@@ -1,39 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Taravi Assistant</title>
-    <meta charset="UTF-8">
+    <title>Taravi Online Assistant</title>
     <style>
-        body { font-family: Arial; padding: 20px; background: #f4f4f4; }
-        #chat { max-width: 600px; margin: auto; }
-        .msg { margin: 10px 0; }
-        .user { color: blue; }
-        .bot { color: green; }
+        body { font-family: Arial; padding: 20px; background-color: #f4f4f4; }
+        #chat-box { width: 100%; max-width: 700px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .user, .bot { margin-bottom: 15px; }
+        .user { text-align: right; color: #333; }
+        .bot { text-align: left; color: #007BFF; }
+        input[type="text"] { width: 80%; padding: 10px; }
+        button { padding: 10px 20px; }
     </style>
 </head>
 <body>
-    <div id="chat">
-        <h2>Taravi Assistant</h2>
-        <div id="messages"></div>
-        <input type="text" id="input" placeholder="Ask something..." style="width: 80%;" />
+    <div id="chat-box">
+        <div id="chat"></div>
+        <input type="text" id="prompt" placeholder="Type your message..." />
         <button onclick="ask()">Ask</button>
     </div>
-<script>
-function ask() {
-    let input = document.getElementById("input").value;
-    fetch("/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: input })
-    })
-    .then(res => res.json())
-    .then(data => {
-        let msgBox = document.getElementById("messages");
-        msgBox.innerHTML += `<div class='msg user'><b>You:</b> ${input}</div>`;
-        msgBox.innerHTML += `<div class='msg bot'><b>Taravi:</b> ${data.response}</div>`;
-        document.getElementById("input").value = "";
-    });
-}
-</script>
+
+    <script>
+        function ask() {
+            const prompt = document.getElementById("prompt").value;
+            if (!prompt) return;
+
+            const chat = document.getElementById("chat");
+            chat.innerHTML += '<div class="user"><b>You:</b> ' + prompt + '</div>';
+            document.getElementById("prompt").value = "";
+
+            fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: prompt })
+            })
+            .then(res => res.json())
+            .then(data => {
+                chat.innerHTML += '<div class="bot"><b>Taravi:</b> ' + data.response + '</div>';
+            })
+            .catch(err => {
+                chat.innerHTML += '<div class="bot"><b>Taravi:</b> Error: ' + err.message + '</div>';
+            });
+        }
+    </script>
 </body>
 </html>
