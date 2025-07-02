@@ -12,18 +12,17 @@ def ask():
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
-        "Referer": "https://github.com/EswarSai/online_assistant",  # required by OpenRouter
-        "X-Title": "Taravi Assistant"  # optional but nice
+        "Referer": "https://github.com/EswarSai/online_assistant",
+        "X-Title": "Taravi Assistant"
     }
 
-       data = {
+    data = {
         "model": "meta-llama/llama-3-8b-instruct",
         "messages": [
-            {"role": "system", "content": "You are Taravi, an intelligent assistant. Give direct and helpful responses without repeating introductions."},
+            {"role": "system", "content": "You are Taravi, an intelligent assistant. Give clear, direct, useful answers without repeating introductions."},
             {"role": "user", "content": user_prompt}
         ]
     }
-
 
     try:
         response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
@@ -31,7 +30,6 @@ def ask():
         result = response.json()
         reply = result["choices"][0]["message"]["content"]
         return jsonify({"response": reply.strip()})
-
     except requests.exceptions.HTTPError as http_err:
         return jsonify({"response": f"HTTP error: {http_err}", "details": response.text}), 500
     except Exception as err:
