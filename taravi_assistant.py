@@ -43,7 +43,8 @@ def ask():
 
 @app.route('/')
 def home():
-    return "Taravi Assistant is running. Go to /dashboard"
+    with open("index.html", "r", encoding="utf-8") as f:
+        return f.read()
 
 @app.route('/dashboard')
 def dashboard():
