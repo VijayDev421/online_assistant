@@ -17,6 +17,7 @@
         <div id="chat"></div>
         <input type="text" id="prompt" placeholder="Type your message..." />
         <button onclick="ask()">Ask</button>
+        <button onclick="resetMemory()">Reset Memory</button>
     </div>
 
     <script>
@@ -39,6 +40,21 @@
             })
             .catch(err => {
                 chat.innerHTML += '<div class="bot"><b>Taravi:</b> Error: ' + err.message + '</div>';
+            });
+        }
+
+        function resetMemory() {
+            fetch("/reset", {
+                method: "POST"
+            })
+            .then(res => res.json())
+            .then(data => {
+                const chat = document.getElementById("chat");
+                chat.innerHTML += '<div class="bot"><i>Memory reset.</i></div>';
+            })
+            .catch(err => {
+                const chat = document.getElementById("chat");
+                chat.innerHTML += '<div class="bot"><i>Error resetting memory.</i></div>';
             });
         }
     </script>
